@@ -9,7 +9,7 @@ Repository to test the BVC market.
 - [x] Buy
 - [x] Lock sell
 - [x] Sell
-- [ ] Good fluctuation
+- [x] Good fluctuation
+- [x] Lock number and time constraints
 - [ ] Time overflow and time flow
-- [ ] Lock number and time constraints
 */

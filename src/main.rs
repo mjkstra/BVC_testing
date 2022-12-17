@@ -49,7 +49,7 @@ fn get_good_qty_and_sell_price (m : Ref<dyn Market>, percentage_of_qty : f32, ki
 
 fn test_lock_sell(mut m: RefMut<dyn Market>, kind : GoodKind, qty : f32, price : f32) -> String{
     let res = m.lock_sell(kind, qty, price, String::from(TRADER_NAME));
-    eprintln!("used sell price {}", price);
+    //eprintln!("used sell price {}", price);
     match res{
         Ok(token) => token,
         Err(err) => String::from(format!("{:?}",err)),
