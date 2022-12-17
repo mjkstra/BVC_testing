@@ -1,31 +1,70 @@
 #![allow(non_snake_case)]
 
-use std::borrow::{Borrow, BorrowMut};
-use std::cell::{Ref, RefMut, RefCell};
-use std::rc::Rc;
+use std::cell::{Ref, RefMut};
 use unitn_market_2022::good::consts::{DEFAULT_EUR_USD_EXCHANGE_RATE, DEFAULT_EUR_YEN_EXCHANGE_RATE, DEFAULT_EUR_YUAN_EXCHANGE_RATE};
 use unitn_market_2022::good::{good::Good, good_kind::GoodKind};
-use unitn_market_2022::market::{MarketGetterError, LockBuyError};
 use unitn_market_2022::{market::Market};
 
 const TRADER_NAME : &'static str = "TESTING";
-
 
 fn main() {
     let market = BVC::BVCMarket::new_random();
 
     print_market((*market).borrow());
 
-    let good_info = get_good_qty_and_price((*market).borrow(),0.75,GoodKind::YEN);
-    /* let res = test_lock_buy( (*market).borrow_mut() ,good_info.0 , good_info.1, good_info.2);
+    // * buy and lock_buy
+    /* let good_info = get_good_qty_and_buy_price((*market).borrow(),0.75,GoodKind::YEN);
+    let res = test_lock_buy( (*market).borrow_mut() ,good_info.0 , good_info.1, good_info.2);
     eprintln!("Testing lock_buy - result: {}", res);
     print_market((*market).borrow());
     eprintln!("Testing buy - result: {}", test_buy((*market).borrow_mut(), res, good_info.2));
     print_market((*market).borrow()); */
 
+    // * sell and lock sell
+    /* let good_info = get_good_qty_and_sell_price((*market).borrow(),0.8,GoodKind::YEN);
+    let res = test_lock_sell( (*market).borrow_mut() ,good_info.0 , good_info.1, good_info.2);
+    eprintln!("Testing lock_sell - result: {}", res);
+    print_market((*market).borrow());
+    eprintln!("Testing sell - result: {}", test_sell((*market).borrow_mut(), res, good_info.0, good_info.1));
+    print_market((*market).borrow());  */
 }
 
-fn get_good_qty_and_price (m : Ref<dyn Market>, percentage_of_qty : f32, kind_to_buy : GoodKind) -> (GoodKind,f32,f32) {   
+fn get_good_qty_and_sell_price (m : Ref<dyn Market>, percentage_of_qty : f32, kind_to_sell : GoodKind) -> (GoodKind,f32,f32) {   
+    let goods = m.get_goods();
+    let mut good_qty : f32 = -1.0;
+    for good in goods {
+        if good.good_kind == GoodKind::EUR{
+            good_qty = good.quantity*percentage_of_qty * match kind_to_sell{
+                GoodKind::EUR => 1.0,
+                GoodKind::USD => DEFAULT_EUR_USD_EXCHANGE_RATE,
+                GoodKind::YEN => DEFAULT_EUR_YEN_EXCHANGE_RATE,
+                GoodKind::YUAN => DEFAULT_EUR_YUAN_EXCHANGE_RATE,
+            };
+        }
+    }
+    eprintln!("conv qty {}", good_qty);
+    let suggested_price = m.get_sell_price(kind_to_sell, good_qty).unwrap();
+    (kind_to_sell,good_qty,suggested_price)
+}
+
+fn test_lock_sell(mut m: RefMut<dyn Market>, kind : GoodKind, qty : f32, price : f32) -> String{
+    let res = m.lock_sell(kind, qty, price, String::from(TRADER_NAME));
+    eprintln!("used sell price {}", price);
+    match res{
+        Ok(token) => token,
+        Err(err) => String::from(format!("{:?}",err)),
+    }
+}
+
+fn test_sell(mut m: RefMut<dyn Market>, token : String, kind_to_sell : GoodKind, qty : f32 ) -> String{
+    let res = m.sell(token, &mut Good::new(kind_to_sell,qty));
+    match res{
+        Ok(good) => String::from(format!("BuyOK with {} eur", good.get_qty())),
+        Err(err) => String::from(format!("{:?}",err)),
+    }
+}
+
+fn get_good_qty_and_buy_price (m : Ref<dyn Market>, percentage_of_qty : f32, kind_to_buy : GoodKind) -> (GoodKind,f32,f32) {   
     let goods = m.get_goods();
     let mut good_qty : f32 = -1.0;
     for good in goods {
@@ -39,7 +78,7 @@ fn get_good_qty_and_price (m : Ref<dyn Market>, percentage_of_qty : f32, kind_to
 
 fn test_lock_buy(mut m: RefMut<dyn Market>, kind : GoodKind, qty : f32, price : f32) -> String{
     let res = m.lock_buy(kind, qty, price, String::from(TRADER_NAME));
-    eprintln!("used price {}", price);
+    //eprintln!("used price {}", price);
     match res{
         Ok(token) => token,
         Err(err) => String::from(format!("{:?}",err)),
