@@ -42,7 +42,6 @@ fn get_good_qty_and_sell_price (m : Ref<dyn Market>, percentage_of_qty : f32, ki
             };
         }
     }
-    eprintln!("conv qty {}", good_qty);
     let suggested_price = m.get_sell_price(kind_to_sell, good_qty).unwrap();
     (kind_to_sell,good_qty,suggested_price)
 }
