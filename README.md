@@ -12,4 +12,3 @@ Repository to test the BVC market.
 - [x] Good fluctuation
 - [x] Lock number and time constraints
 - [ ] Time overflow and time flow
-*/
