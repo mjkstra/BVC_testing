@@ -13,7 +13,7 @@ fn main() {
     print_market((*market).borrow());
 
     // * buy and lock_buy
-    /* let good_info = get_good_qty_and_buy_price((*market).borrow(),0.75,GoodKind::YEN);
+    /* let good_info = get_good_qty_and_buy_price((*market).borrow(),0.74,GoodKind::YEN);
     let res = test_lock_buy( (*market).borrow_mut() ,good_info.0 , good_info.1, good_info.2);
     eprintln!("Testing lock_buy - result: {}", res);
     print_market((*market).borrow());
@@ -21,7 +21,7 @@ fn main() {
     print_market((*market).borrow()); */
 
     // * sell and lock sell
-    /* let good_info = get_good_qty_and_sell_price((*market).borrow(),0.8,GoodKind::YEN);
+    /* let good_info = get_good_qty_and_sell_price((*market).borrow(),0.79,GoodKind::YEN);
     let res = test_lock_sell( (*market).borrow_mut() ,good_info.0 , good_info.1, good_info.2);
     eprintln!("Testing lock_sell - result: {}", res);
     print_market((*market).borrow());
