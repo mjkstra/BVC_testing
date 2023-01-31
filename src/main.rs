@@ -10,7 +10,7 @@ use unitn_market_2022::market::Market;
 const TRADER_NAME: &'static str = "TESTING";
 
 fn main() {
-    let market = BVC::BVCMarket::new_random();
+    let mut market = BVC::BVCMarket::new_random();
 
     print_market((*market).borrow());
 
@@ -31,6 +31,7 @@ fn main() {
     print_market((*market).borrow());
 
     // * sell and lock sell
+    market = BVC::BVCMarket::new_random();
     let good_info = get_good_qty_and_sell_price((*market).borrow(), 0.79, GoodKind::YEN);
     let res = test_lock_sell(
         (*market).borrow_mut(),
@@ -61,7 +62,10 @@ fn get_good_qty_and_sell_price(
                 * match kind_to_sell {
                     GoodKind::EUR => 1.0,
                     GoodKind::USD => DEFAULT_EUR_USD_EXCHANGE_RATE,
-                    GoodKind::YEN => DEFAULT_EUR_YEN_EXCHANGE_RATE,
+                    GoodKind::YEN => {
+                        eprintln!("\n\nEXCHANGE RATE: {}\n\n", DEFAULT_EUR_YEN_EXCHANGE_RATE);
+                        DEFAULT_EUR_YEN_EXCHANGE_RATE
+                    }
                     GoodKind::YUAN => DEFAULT_EUR_YUAN_EXCHANGE_RATE,
                 };
         }
